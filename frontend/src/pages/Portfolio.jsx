@@ -19,7 +19,6 @@ export default function Portfolio() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ---------------- WALLET ----------------
   const connectWallet = async () => {
     if (!window.ethereum) return alert("Metamask tidak ditemukan");
     const accounts = await window.ethereum.request({
@@ -28,7 +27,6 @@ export default function Portfolio() {
     setAccount(accounts[0]);
   };
 
-  // Auto-detect connected wallet
   useEffect(() => {
     async function checkWallet() {
       if (window.ethereum) {
@@ -41,13 +39,11 @@ export default function Portfolio() {
     checkWallet();
   }, []);
 
-  // ---------------- LOAD PORTFOLIO ----------------
   const loadPortfolio = async () => {
     try {
         if (!window.ethereum || !account) return;
         const provider = new ethers.BrowserProvider(window.ethereum);
         
-        // 1. Get All Songs from NFT Contract
         const nftContract = new ethers.Contract(
           CONTRACTS.musicIPNFT.address,
           CONTRACTS.musicIPNFT.abi,
@@ -56,10 +52,7 @@ export default function Portfolio() {
         const total = await nftContract.tokenCounter();
         
         const myHoldings = [];
-        let totalVal = 0; // Simplified for demo
-        let totalInv = 0; // Simplified for demo
 
-        // 2. Iterate and check balances on each Royalty Contract
         for (let i = 1; i <= total; i++) {
             const song = await nftContract.getMusicIP(i);
             const royaltyContract = new ethers.Contract(
@@ -70,9 +63,7 @@ export default function Portfolio() {
 
             const balance = await royaltyContract.balanceOf(account);
             if (balance > 0) {
-                // Determine value (mock logic or fetch price)
-                 // NOTE: Real implementations would need an indexer. This loop is slow but functional for small demo.
-                 const pricePerShare = await royaltyContract.pricePerShare(); // Assuming public var
+                 const pricePerShare = await royaltyContract.pricePerShare();
                  
                  const value = (balance * pricePerShare) / 1000000000000000000n; // ETH conversion
 
@@ -82,10 +73,10 @@ export default function Portfolio() {
                      artist: song.artist,
                      sharesOwned: balance.toString(),
                      currentValue: value.toString(),
-                     investedAmount: "0", // Hard to track without events indexing
+                     investedAmount: "0",
                      profit: "0",
                      profitPercent: "0",
-                     royaltiesEarned: "0" // Would need dividend tracking
+                     royaltiesEarned: "0"
                  });
             }
         }
@@ -111,7 +102,6 @@ export default function Portfolio() {
     if (account) loadPortfolio();
   }, [account]);
 
-  // ---------------- UI ----------------
   if (!account) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white bg-black">

@@ -31,7 +31,6 @@ export default function AdminDashboard() {
               return;
           }
 
-          // Only fetch data if Auth passes
           fetchRequests();
           fetchActiveSongs();
       } catch (err) {
@@ -52,11 +51,8 @@ export default function AdminDashboard() {
       
       const pendingData = await contract.getPendingRequests();
 
-      // pendingData is a Proxy/Result array. we map it carefully.
       const formatted = pendingData.map(req => {
           try {
-              // Ethers v6 Result object behaves like an array AND object
-              // valid keys: requestId, creator, title, artist, royaltyContract, hasMinted
               return {
                 requestId: req.requestId?.toString() || req[0]?.toString(),
                 creator: req.creator || req[1],
@@ -68,7 +64,7 @@ export default function AdminDashboard() {
               console.error("Error parsing request:", req, err);
               return null;
           }
-      }).filter(Boolean); // remove nulls
+      }).filter(Boolean);
 
       setRequests(formatted);
     } catch (error) {
@@ -78,13 +74,12 @@ export default function AdminDashboard() {
     }
   }
 
-  // --- NEW: FETCH ACTIVE SONGS (Minted) ---
   const [activeSongs, setActiveSongs] = useState([]);
   const [priceInputs, setPriceInputs] = useState({});
 
   useEffect(() => {
     fetchActiveSongs();
-  }, [loading]); // Fetch after initial load
+  }, [loading]);
 
   async function fetchActiveSongs() {
       if (!window.ethereum) return;

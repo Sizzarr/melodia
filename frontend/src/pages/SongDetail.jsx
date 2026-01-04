@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { CONTRACTS } from "../config/contracts";
 
 export default function SongDetail() {
-  const { id } = useParams(); // tokenId dari URL
+  const { id } = useParams();
 
   const [account, setAccount] = useState(null);
   const [provider, setProvider] = useState(null);
@@ -17,9 +17,6 @@ export default function SongDetail() {
   const [totalSupply, setTotalSupply] = useState("0");
   const [loading, setLoading] = useState(false);
 
-  /* =============================
-     CONNECT WALLET
-  ============================== */
   async function connectWallet() {
     if (!window.ethereum) {
       alert("MetaMask tidak ditemukan");
@@ -38,9 +35,6 @@ export default function SongDetail() {
 
   const [pricePerShare, setPricePerShare] = useState("0");
 
-  /* =============================
-     LOAD SONG (MusicIPNFT)
-  ============================== */
   const [error, setError] = useState(null);
 
   async function loadSong() {
@@ -55,7 +49,6 @@ export default function SongDetail() {
 
       const data = await ipNFT.getMusicIP(id);
       
-      // Check if song exists
       if (!data.title || data.title === "") {
         setError("Song not found");
         return;
@@ -64,7 +57,6 @@ export default function SongDetail() {
       let description = "";
       let cover = "";
       
-      // Try to load metadata from IPFS
       if (data.metadataURI && data.metadataURI.startsWith("ipfs://")) {
         try {
           const metaRes = await fetch(
@@ -73,9 +65,7 @@ export default function SongDetail() {
           const meta = await metaRes.json();
           description = meta.description || "";
           cover = meta.image ? meta.image.replace("ipfs://", "https://ipfs.io/ipfs/") : "";
-        } catch (e) {
-          // Metadata fetch failed, use defaults
-        }
+        } catch (e) {}
       }
 
       setSong({
@@ -89,7 +79,6 @@ export default function SongDetail() {
         creator: data.creator,
       });
 
-      // hubungkan ke royalty contract
       if (data.royaltyContract && data.royaltyContract !== "0x0000000000000000000000000000000000000000") {
         const royalty = new ethers.Contract(
           data.royaltyContract,
@@ -105,9 +94,7 @@ export default function SongDetail() {
         try {
           const price = await royalty.pricePerShare();
           setPricePerShare(ethers.formatEther(price));
-        } catch (e) {
-          // Price not set
-        }
+        } catch (e) {}
 
         if (account) {
           const bal = await royalty.balanceOf(account);
@@ -120,9 +107,6 @@ export default function SongDetail() {
     }
   }
 
-  /* =============================
-     BUY ROYALTY (BUY SHARES)
-  ============================== */
   async function buyRoyalty(amount) {
     if (!signer || !royaltyContract) return;
 
@@ -134,10 +118,8 @@ export default function SongDetail() {
       const tokensToBuy = ethers.parseEther(amount);
       const priceWei = ethers.parseEther(pricePerShare);
       
-      // Calculate cost: (tokens * price) / 1e18
       const totalCost = (tokensToBuy * priceWei) / ethers.parseEther("1");
       
-      // Check balance before sending
       const balance = await signer.provider.getBalance(account);
       if (balance < totalCost) {
         const needed = ethers.formatEther(totalCost);
@@ -169,9 +151,6 @@ export default function SongDetail() {
     }
   }
 
-  /* =============================
-     INIT
-  ============================== */
   useEffect(() => {
     connectWallet();
   }, []);

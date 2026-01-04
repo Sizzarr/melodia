@@ -8,7 +8,6 @@ export default function Marketplace() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // load data dari smart contract
   const loadSongs = async () => {
     try {
         if (typeof window.ethereum === "undefined") return;

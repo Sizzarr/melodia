@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import MusicRoyaltyArtifact from "../artifacts/contracts/MusicRoyalty.sol/MusicRoyalty.json";
 import { CONTRACTS } from "../config/contracts";
 
-const KYC_REGISTRY_ADDRESS = "0xfeDaf49154eCc07b315B527C194950c8e6F0b3B3";
+
 
 export default function CreatorHub() {
   const navigate = useNavigate();
@@ -29,9 +29,9 @@ export default function CreatorHub() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const [status, setStatus] = useState(""); // "deploying", "signing", "requesting", "success"
+  const [status, setStatus] = useState("");
 
-  // ... (form state remains same)
+
 
   async function handleDeploy(e) {
     e.preventDefault();
@@ -40,12 +40,10 @@ export default function CreatorHub() {
     try {
       setLoading(true);
       
-      // STEP 1: DEPLOY (Includes Setting Legal Doc now)
       setStatus("Step 1/2: Deploying Contract... (Please Sign)");
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
-      // Ensure correct bytecode format (handles nested object vs string)
       const bytecode = MusicRoyaltyArtifact.bytecode?.object || MusicRoyaltyArtifact.bytecode;
 
       const factory = new ethers.ContractFactory(
@@ -71,7 +69,6 @@ export default function CreatorHub() {
 
       await contract.waitForDeployment();
 
-      // STEP 2: REQUEST LISTING (Optional - will skip if fails)
       try {
         setStatus("Step 2/2: Submitting to Admin... (Please Sign)");
         const ipNFT = new ethers.Contract(
