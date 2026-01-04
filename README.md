@@ -79,6 +79,33 @@ Login: http://localhost:5173/admin
 - **Framework**: Hardhat
 - **Library**: ethers.js v6
 
+## Deployment
+
+### Netlify
+
+1. Push repo ke GitHub
+2. Connect repo di Netlify
+3. Netlify akan auto-detect `netlify.toml`
+4. Deploy otomatis setiap push
+
+### Docker
+
+```bash
+# Build image
+docker build -t melodia .
+
+# Run container
+docker run -p 3000:80 melodia
+```
+
+Atau dengan docker-compose:
+
+```bash
+docker-compose up -d
+```
+
+Akses di http://localhost:3000
+
 ## License
 
 MIT

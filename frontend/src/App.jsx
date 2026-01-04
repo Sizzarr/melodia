@@ -133,24 +133,11 @@ export default function App() {
     <BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />
       
-      {/* GLOBAL NETWORK WARNING */}
-      {isWrongNetwork && account && (
-          <div className="bg-red-600 text-white p-4 text-center font-bold flex justify-center items-center gap-4 fixed top-0 left-0 right-0 z-50">
-              <span>⚠️ WRONG NETWORK DETECTED! Use Sepolia.</span>
-              <button 
-                  onClick={switchNetwork}
-                  className="bg-white text-red-600 px-4 py-1 rounded-full text-sm hover:bg-gray-200"
-              >
-                  Switch to Sepolia
-              </button>
-          </div>
-      )}
-
       {/* Add padding top if banner is visible */}
-      <div className={isWrongNetwork && account ? "pt-16" : ""}>
+      <div>
         <Routes>
             {/* PUBLIC ROUTES */}
-            <Route element={<Layout account={account} onConnect={connectWallet} />}>
+            <Route element={<Layout account={account} onConnect={connectWallet} isWrongNetwork={isWrongNetwork} onSwitchNetwork={switchNetwork} />}>
                 <Route path="/" element={<HomePage />} />
                 <Route
                 path="/marketplace"

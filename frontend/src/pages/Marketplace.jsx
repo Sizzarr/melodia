@@ -10,8 +10,14 @@ export default function Marketplace() {
 
   const loadSongs = async () => {
     try {
-        if (typeof window.ethereum === "undefined") return;
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        let provider;
+        
+        if (typeof window.ethereum !== "undefined") {
+          provider = new ethers.BrowserProvider(window.ethereum);
+        } else {
+          provider = new ethers.JsonRpcProvider("https://ethereum-sepolia.publicnode.com");
+        }
+        
         const contract = new ethers.Contract(
           CONTRACTS.musicIPNFT.address,
           CONTRACTS.musicIPNFT.abi,
@@ -37,6 +43,33 @@ export default function Marketplace() {
         setSongs(items);
     } catch (err) {
         console.error("Marketplace Load Error:", err);
+        
+        try {
+          const fallbackProvider = new ethers.JsonRpcProvider("https://ethereum-sepolia.publicnode.com");
+          const contract = new ethers.Contract(
+            CONTRACTS.musicIPNFT.address,
+            CONTRACTS.musicIPNFT.abi,
+            fallbackProvider
+          );
+          
+          const total = await contract.tokenCounter();
+          const items = [];
+          for (let i = 1; i <= total; i++) {
+            const song = await contract.getMusicIP(i);
+            if (song.isActive) {
+              items.push({
+                id: i,
+                title: song.title,
+                artist: song.artist,
+                metadata: song.metadataURI,
+                royaltyContract: song.royaltyContract
+              });
+            }
+          }
+          setSongs(items);
+        } catch (fallbackErr) {
+          console.error("Fallback also failed:", fallbackErr);
+        }
     } finally {
         setLoading(false);
     }
