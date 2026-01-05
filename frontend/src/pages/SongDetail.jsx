@@ -237,13 +237,27 @@ export default function SongDetail() {
               )}
             </div>
 
-            <button
-              onClick={() => buyRoyalty("10")}
-              disabled={loading || pricePerShare === "0"}
-              className="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-lg font-bold disabled:opacity-50 hover:shadow-lg hover:shadow-purple-500/30 transition"
-            >
-              {loading ? "Processing..." : "Buy 10 Shares"}
-            </button>
+            <div className="flex gap-3">
+              <input
+                type="number"
+                min="0.1"
+                step="0.1"
+                defaultValue="1"
+                id="shareAmount"
+                className="w-24 px-4 py-4 bg-white/10 border border-white/20 rounded-xl text-center text-lg font-bold"
+                placeholder="Qty"
+              />
+              <button
+                onClick={() => {
+                  const amount = document.getElementById("shareAmount").value || "1";
+                  buyRoyalty(amount);
+                }}
+                disabled={loading || pricePerShare === "0"}
+                className="flex-1 px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-lg font-bold disabled:opacity-50 hover:shadow-lg hover:shadow-purple-500/30 transition"
+              >
+                {loading ? "Processing..." : "Buy Shares"}
+              </button>
+            </div>
 
             {!account && (
               <button
