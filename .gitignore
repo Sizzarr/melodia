@@ -1,6 +1,7 @@
 # Hardhat
 node_modules
 artifacts
+!frontend/src/artifacts
 cache
 typechain
 typechain-types
