@@ -53,7 +53,11 @@ export default function AdminLoginPage() {
             }
         } catch (error) {
             console.error(error);
-            toast.error("Login Error: " + error.message);
+            if (error.code === "ACTION_REJECTED" || error.code === 4001) {
+                toast.error("Connection cancelled");
+            } else {
+                toast.error("Login failed. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
