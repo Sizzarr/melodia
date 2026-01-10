@@ -1,153 +1,109 @@
+# Project Documentation
 
-# **Project Documentation (Revised for GitHub)**
-
-## **1. Project Structure**
+## 1. Project Structure
 
 ```
 ├── contracts
-│   ├── KYCRegistry.sol          # Verifikasi KYC (opsional untuk demo)
-│   ├── MusicIPNFT.sol           # NFT untuk IP musik
-│   └── MusicRoyalty.sol         # Kontrak utama tokenisasi & jual royalty
+│   ├── KYCRegistry.sol          # KYC verification (optional for demo)
+│   ├── MusicIPNFT.sol           # Music IP NFT
+│   └── MusicRoyalty.sol         # Main tokenization & royalty contract
 ├── docs
-│   ├── DEPLOYMENT.md            # Panduan deploy smart contract
-│   ├── DOCUMENTATION.md         # Dokumentasi umum proyek
-│   ├── ROADMAP.md               # Roadmap proyek
-│   └── SMART_CONTRACTS.md       # Dokumentasi fungsi kontrak
+│   ├── COMPLIANCE.md            # Compliance declaration
+│   ├── DEPLOYMENT.md            # Deployment guide
+│   ├── DOCUMENTATION.md         # This file
+│   ├── PITCH.md                 # One-pager pitch
+│   ├── ROADMAP.md               # Project roadmap
+│   ├── SMART_CONTRACTS.md       # Contract documentation
+│   └── TEAM.md                  # Team information
 ├── frontend
-│   ├── index.html
-│   ├── package.json
-│   ├── package-lock.json
 │   ├── src
-│   │   ├── abi
-│   │   │   ├── KYCRegistry.json
-│   │   │   ├── MusicIPNFT.json
-│   │   │   └── MusicRoyalty.json
-│   │   ├── App.jsx
-│   │   ├── components
-│   │   │   └── Navbar.jsx
 │   │   ├── config
-│   │   │   └── contracts.js    # Alamat & ABI kontrak untuk frontend
-│   │   ├── index.css
-│   │   ├── lib
-│   │   │   └── ethers.js        # Helper Web3 / ethers.js
-│   │   ├── main.jsx
+│   │   │   ├── contracts.js     # Contract addresses & ABIs
+│   │   │   └── networks.js      # Network configuration
 │   │   ├── pages
-│   │   │   ├── ConnectWallet.jsx
-│   │   │   ├── CreatorHub.jsx   # Deploy / mint MusicRoyalty untuk demo
+│   │   │   ├── AdminDashboard.jsx
+│   │   │   ├── AdminLoginPage.jsx
+│   │   │   ├── CreatorHub.jsx
 │   │   │   ├── HomePage.jsx
 │   │   │   ├── Marketplace.jsx
 │   │   │   ├── Portfolio.jsx
-│   │   │   └── SongDetail.jsx   # Detail lagu & beli token
-│   │   ├── postcss.config.js
-│   │   ├── tailwind.config.js
+│   │   │   └── SongDetail.jsx
 │   │   └── web3
-│   │       ├── contracts.js     # Kontrak helper untuk connect frontend
-│   │       └── provider.js      # Provider / signer
+│   │       └── provider.js
 │   └── vite.config.js
-├── LICENSE
+├── hardhat.config.js
 ├── package.json
-├── package-lock.json
 └── README.md
 ```
 
 ---
 
-## **2. Contracts Overview**
+## 2. Contracts Overview
 
-### **2.1 MusicRoyalty.sol**
+### 2.1 MusicRoyalty.sol
 
-* Fungsi utama: **Tokenisasi lagu & pembagian royalty**.
+- **Main function**: Song tokenization & royalty distribution
+- `buyShares` → users can buy tokens from admin
+- `pricePerShare` & `setPricePerShare` → admin can change token price
+- Event `SharesPurchased` → records purchases
+- Modifier `onlyVerifiedOrDemo` → bypasses KYC for demo
 
-* Untuk demo, tambahan:
+### 2.2 MusicIPNFT.sol
 
-  1. `buyShares` → orang bisa beli token dari admin.
-  2. `pricePerShare` & `setPricePerShare` → admin bisa ubah harga token.
-  3. Event `SharesPurchased` → mencatat pembelian.
-  4. Modifier `onlyVerifiedOrDemo` → bypass KYC sementara agar semua bisa beli untuk demo.
+- NFT for Music Intellectual Property
+- Unchanged for demo, only for minting IP NFTs
 
-* Opsional untuk demo:
+### 2.3 KYCRegistry.sol
 
-  * `_isVerified()` bisa selalu return `true`.
-  * Freeze / maxHolding bisa diabaikan jika mengganggu demo.
-
----
-
-### **2.2 MusicIPNFT.sol**
-
-* NFT untuk Intellectual Property musik.
-* Tidak perlu diubah untuk demo, hanya untuk mint IP NFT.
+- Optional for demo
+- Can return `true` always to allow all accounts to buy tokens
 
 ---
 
-### **2.3 KYCRegistry.sol**
+## 3. Frontend Pages
 
-* Opsional untuk demo.
-* Bisa dibuat return `true` selalu supaya semua account bisa beli token.
-
----
-
-## **3. Frontend Pages**
-
-| Page              | Fungsi                                                                 |
-| ----------------- | ---------------------------------------------------------------------- |
-| HomePage.jsx      | Tampilan awal, menampilkan statistik & link ke SongDetail / CreatorHub |
-| CreatorHub.jsx    | Deploy / mint MusicRoyalty & simulasikan upload musik                  |
-| SongDetail.jsx    | Menampilkan metadata lagu dari IPFS & beli token                       |
-| ConnectWallet.jsx | Connect wallet (MetaMask)                                              |
-| Marketplace.jsx   | Opsional, menampilkan semua lagu / NFT                                 |
-| Portfolio.jsx     | Opsional, menampilkan saldo user / royalty                             |
+| Page | Function |
+|------|----------|
+| HomePage.jsx | Landing page with stats and links |
+| CreatorHub.jsx | Deploy MusicRoyalty & simulate music upload |
+| SongDetail.jsx | Display song metadata from IPFS & buy tokens |
+| Marketplace.jsx | Display all songs/NFTs |
+| Portfolio.jsx | Show user's token balance & royalties |
+| AdminLoginPage.jsx | Admin wallet connection |
+| AdminDashboard.jsx | Approve/reject listing requests |
 
 ---
 
-## **4. Frontend Integrasi**
+## 4. Frontend Integration
 
-1. **Update ABI & Address**
+### Update ABI & Address
 
-   * File: `frontend/src/config/contracts.js`
-   * Contoh:
+File: `frontend/src/config/contracts.js`
 
 ```js
 export const CONTRACTS = {
   musicRoyalty: {
     address: "0xYourDeployedContractAddress",
-    abi: require("../abi/MusicRoyalty.json").abi,
+    abi: MusicRoyaltyABI,
   },
 };
 ```
-## **Tes dan Fix!! Pages fuction** `frontend/src/pages/..`
 
-2. **Connect Wallet**
+### Network Configuration
 
-   * Gunakan `window.ethereum` untuk mendapatkan `provider`, `signer`, dan `account`.
-   * Pastikan account tampil di UI.
+File: `frontend/src/config/networks.js`
 
-3. **Load Musik**
-
-   * Ambil metadata dari kontrak (`music`) & IPFS.
-   * Tampilkan `title`, `artist`, `cover`, `description`.
-
-4. **Buy Shares**
-
-   * Pastikan fungsi `buyShares` dipanggil.
-   * Saldo bertambah / berkurang sesuai jumlah pembelian.
-
-5. **Admin Functions**
-
-   * Freeze / unfreeze account.
-   * Set legal document & price per share.
-   * Force transfer token (jika perlu).
+Change `VITE_NETWORK` environment variable to switch networks:
+- `mantleTestnet` - Mantle Testnet
+- `mantleMainnet` - Mantle Mainnet
 
 ---
 
-## **5. Cek Demo Checklist Dan Perbaiki**
+## 5. Demo Checklist
 
-1. Deploy `MusicRoyalty` lewat **Creator Hub**.
-2. HomePage menampilkan data lagu (dummy atau real).
-3. SongDetail bisa membaca metadata dari IPFS.
-4. User bisa beli token (bypass KYC sementara).
-5. Admin bisa ubah harga token, freeze akun, upload legal document.
-6. Opsional: mint IP NFT untuk lagu baru.
-
----
-
-
+- [x] Deploy `MusicRoyalty` via **Creator Hub**
+- [x] HomePage displays song data
+- [x] SongDetail reads metadata
+- [x] Users can buy tokens (KYC bypassed)
+- [x] Admin can change token price
+- [x] Optional: mint IP NFT for new song

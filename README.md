@@ -4,18 +4,18 @@
   <img src="frontend/public/melodia_logo.png" alt="Melodia Logo" width="200"/>
 </p>
 
-Platform Web3 untuk tokenisasi royalti musik. Musisi dapat menjual bagian kepemilikan royalti lagu kepada investor/penggemar secara transparan menggunakan Ethereum blockchain.
+A Web3 platform for tokenizing music royalties. Musicians can sell ownership shares of song royalties to investors and fans transparently using blockchain technology, powered by **Mantle Network**.
 
 🌐 **Live Demo**: [https://melodia-eth.netlify.app](https://melodia-eth.netlify.app)
 
-## Fitur Utama
+## ✨ Key Features
 
-- **Creator Hub**: Deploy kontrak royalti untuk lagu baru
-- **Marketplace**: Jual beli kepemilikan royalti lagu
-- **Portfolio**: Lihat aset musik yang dimiliki
+- **Creator Hub**: Deploy royalty contracts for new songs
+- **Marketplace**: Buy and sell song royalty ownership
+- **Portfolio**: View your music assets and holdings
 - **Admin Dashboard**: Approve/reject listing requests
 
-## Quick Start
+## 🚀 Quick Start
 
 ### 1. Install Dependencies
 
@@ -26,69 +26,92 @@ cd frontend && npm install
 
 ### 2. Setup Environment
 
-Buat file `.env` di root:
+Create a `.env` file in the project root:
 
 ```env
 PRIVATE_KEY=0xYOUR_PRIVATE_KEY
-SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
+MANTLE_TESTNET_RPC_URL=https://rpc.testnet.mantle.xyz
+
+# For frontend network selection
+VITE_NETWORK=mantleTestnet
 ```
 
-### 3. Deploy Contracts (Sepolia)
+### 3. Deploy Contracts
 
+**Deploy to Mantle Testnet:**
 ```bash
-npx hardhat run scripts/deploy-admin.js --network sepolia
+npx hardhat run scripts/deploy-admin.js --network mantleTestnet
 ```
 
-Update alamat di `frontend/src/config/contracts.js`
+**Deploy to Mantle Mainnet:**
+```bash
+npx hardhat run scripts/deploy-admin.js --network mantleMainnet
+```
 
-### 4. Jalankan Frontend
+Update contract addresses in `frontend/src/config/contracts.js`
+
+### 4. Run Frontend
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Buka http://localhost:5173
+Open http://localhost:5173
 
-## Network
+## 🔗 Network Configuration
 
-- **Network**: Sepolia Testnet
-- **Chain ID**: 11155111
+| Network | Chain ID | RPC URL | Explorer |
+|---------|----------|---------|----------|
+| **Mantle Sepolia** (Recommended) | 5003 | https://rpc.sepolia.mantle.xyz | https://explorer.sepolia.mantle.xyz |
+| Mantle Mainnet | 5000 | https://rpc.mantle.xyz | https://explorer.mantle.xyz |
 
-## Contract Addresses (Current Deployment)
+### Switching Networks
+
+Change the `VITE_NETWORK` environment variable in your `.env` file:
+- `mantleSepolia` - Mantle Sepolia Testnet (recommended for development)
+- `mantleMainnet` - Mantle Mainnet (production)
+
+## 📄 Contract Addresses
+
+### Mantle Testnet (Current Deployment)
 
 | Contract | Address |
 |----------|---------|
-| KYCRegistry | `0x381D28F516f3951203A29E3B636e00B6e79AC220` |
-| MusicIPNFT | `0x57cFb035C6DFCB71f01AE6EA24196328E8b352f6` |
+| KYCRegistry | `TBD after deployment` |
+| MusicIPNFT | `TBD after deployment` |
 
-## Admin Access
+## 👤 Admin Access
 
-Wallet yang deploy MusicIPNFT otomatis menjadi admin.
+The wallet that deploys the `MusicIPNFT` contract automatically becomes the admin.
 
-Login: http://localhost:5173/admin
+Admin login: http://localhost:5173/admin
 
-## Dokumentasi
+## 📚 Documentation
 
-- [Deployment Guide](./docs/DEPLOYMENT.md) - Cara deploy dan setup
-- [Smart Contracts](./docs/SMART_CONTRACTS.md) - Arsitektur kontrak
-- [Roadmap](./docs/ROADMAP.md) - Rencana pengembangan
+- [Deployment Guide](./docs/DEPLOYMENT.md) - How to deploy and setup
+- [Smart Contracts](./docs/SMART_CONTRACTS.md) - Contract architecture
+- [Roadmap](./docs/ROADMAP.md) - Development roadmap
+- [Pitch](./docs/PITCH.md) - One-pager pitch document
+- [Team](./docs/TEAM.md) - Team bios and contact
+- [Compliance](./docs/COMPLIANCE.md) - Compliance declaration
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - **Frontend**: React + Vite + TailwindCSS
 - **Smart Contracts**: Solidity 0.8.20
 - **Framework**: Hardhat
 - **Library**: ethers.js v6
+- **Blockchain**: Mantle Network (L2)
 
-## Deployment
+## 🚀 Deployment
 
 ### Netlify
 
-1. Push repo ke GitHub
-2. Connect repo di Netlify
-3. Netlify akan auto-detect `netlify.toml`
-4. Deploy otomatis setiap push
+1. Push repository to GitHub
+2. Connect repo in Netlify
+3. Netlify will auto-detect `netlify.toml`
+4. Auto-deploy on every push
 
 ### Docker
 
@@ -100,14 +123,14 @@ docker build -t melodia .
 docker run -p 3000:80 melodia
 ```
 
-Atau dengan docker-compose:
+Or with docker-compose:
 
 ```bash
 docker-compose up -d
 ```
 
-Akses di http://localhost:3000
+Access at http://localhost:3000
 
-## License
+## 📄 License
 
 MIT

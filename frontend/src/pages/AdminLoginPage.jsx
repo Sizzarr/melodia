@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
 import { toast } from "react-hot-toast";
 import { CONTRACTS } from "../config/contracts";
+import { 
+    getActiveNetwork, 
+    getSwitchNetworkParams, 
+    getAddNetworkParams 
+} from "../config/networks";
 
 export default function AdminLoginPage() {
     const navigate = useNavigate();
@@ -65,10 +70,11 @@ export default function AdminLoginPage() {
 
     async function switchNetwork() {
         if (!window.ethereum) return;
+        const network = getActiveNetwork();
         try {
             await window.ethereum.request({
                 method: "wallet_switchEthereumChain",
-                params: [{ chainId: "0xaa36a7" }], // Sepolia
+                params: [getSwitchNetworkParams()],
             });
             window.location.reload();
         } catch (switchError) {
@@ -76,21 +82,10 @@ export default function AdminLoginPage() {
                 try {
                     await window.ethereum.request({
                         method: "wallet_addEthereumChain",
-                        params: [
-                            {
-                                chainId: "0xaa36a7",
-                                chainName: "Sepolia Testnet",
-                                rpcUrls: ["https://rpc.sepolia.org"],
-                                nativeCurrency: {
-                                    name: "ETH",
-                                    symbol: "ETH",
-                                    decimals: 18,
-                                },
-                            },
-                        ],
+                        params: [getAddNetworkParams()],
                     });
                 } catch (addError) {
-                    toast.error("Failed to add network");
+                    toast.error(`Failed to add ${network.name}`);
                 }
             } else {
                 toast.error("Failed to switch network");

@@ -1,77 +1,95 @@
-# Roadmap Proyek Melodia 🗺️
+# Melodia Project Roadmap 🗺️
 
-Dokumen ini merangkum status saat ini dari proyek Melodia dan fitur-fitur apa saja yang **belum diimplementasikan** dan perlu dikerjakan pada tahap selanjutnya.
-
----
-
-## ✅ Current Status (Tahap 1 - MVP Selesai)
-
-Saat ini, core foundation dari aplikasi sudah berjalan:
-1.  **Smart Contract Architecture**:
-    *   `MusicIPNFT`: Sebagai database lagu terpusat (Master).
-    *   `MusicRoyalty`: Token ERC-20 yang mewakili kepemilikan saham lagu.
-2.  **Frontend Basic**:
-    *   **Creator**: Bisa mempublikasikan lagu (Deploy Contract otomatis).
-    *   **Explorer**: Bisa melihat daftar lagu yang ada di blockchain.
-    *   **Wallet**: Integrasi MetaMask (Connect/Disconnect/Network Check).
-3.  **Local Environment**:
-    *   Full support untuk development di Localhost Hardhat.
+This document outlines the current status of the Melodia project and planned future development.
 
 ---
 
-## 🚧 Missing Features (Tahap 2 & 3 - Future Work)
+## ✅ Current Status (Phase 1 - MVP Complete)
 
-Berikut adalah daftar fitur kritikal yang belum ada dan harus menjadi prioritas pengembangan selanjutnya:
+The core foundation of the application is now functional:
 
-### 1. Revenue Distribution Logic (Penting!)
-Smart contract `MusicRoyalty.sol` saat ini baru berfungsi sebagai **pencatat kepemilikan** (siapa punya berapa saham).
-**Belum ada fitur pembagian uang.**
+1. **Smart Contract Architecture**:
+   - `MusicIPNFT`: Centralized song database (Master)
+   - `MusicRoyalty`: ERC-20 tokens representing song ownership shares
 
-*   **To Do**:
-    *   Implementasi fungsi `depositRoyalty()`: Agar platform streaming/admin bisa menyetor ETH pendapatan ke kontrak.
-    *   Implementasi fungsi `claimReward()`: Agar pemegang token bisa menarik jatah ETH mereka sesuai % saham yang dimiliki.
-    *   Update kontrak `MusicRoyalty.sol` untuk mendukung standar *Dividend-Paying Token*.
+2. **Frontend Features**:
+   - **Creator Hub**: Publish songs (automatic contract deployment)
+   - **Marketplace**: View songs available on the blockchain
+   - **Portfolio**: View owned music assets
+   - **Wallet**: MetaMask integration (Connect/Disconnect/Network Check)
 
-### 2. Marketplace (Jual Beli Saham)
-Saat ini tombol "Invest" tidak melakukan apa-apa selain pengecekan saldo. User tidak bisa membeli saham dari orang lain.
+3. **Blockchain Integration**:
+   - Mantle Testnet deployment ready
+   - Easy switch to Mantle Mainnet
 
-*   **To Do**:
-    *   Buat Smart Contract `Marketplace.sol`.
-    *   Fitur `listToken()`: User A menjual token seharga X ETH.
-    *   Fitur `buyToken()`: User B membayar ETH untuk mendapatkan token User A.
-    *   Integrasi Frontend: Menampilkan Order Book dan grafik harga.
+---
+
+## 🚧 Planned Features (Phase 2 & 3)
+
+### 1. Revenue Distribution Logic (Priority!)
+
+Current `MusicRoyalty.sol` only tracks ownership (who owns how many shares).
+**No revenue distribution yet.**
+
+**To Do**:
+- Implement `depositRoyalty()`: For streaming platforms/admin to deposit MNT earnings
+- Implement `claimReward()`: For token holders to withdraw their share of MNT
+- Update `MusicRoyalty.sol` to support *Dividend-Paying Token* standard
+
+### 2. Secondary Marketplace
+
+Currently, the "Invest" button only checks balance. Users cannot buy shares from others.
+
+**To Do**:
+- Create `Marketplace.sol` smart contract
+- Feature `listToken()`: User A sells token for X MNT
+- Feature `buyToken()`: User B pays MNT to get User A's tokens
+- Frontend: Display Order Book and price charts
 
 ### 3. Real IPFS Integration
-Saat ini fitur upload MP3 dan Cover Art hanya simulasi. Frontend menghasilkan link palsu (`ipfs://QmSongMetadata...`).
 
-*   **To Do**:
-    *   Integrasi layanan Pinning IPFS (seperti Pinata atau Web3.Storage).
-    *   Upload file asli ke IPFS saat user klik "Publish".
-    *   Simpan CID (Content ID) asli ke dalam NFT Metadata.
+Currently, MP3 and Cover Art uploads are simulated. Frontend generates fake links (`ipfs://QmSongMetadata...`).
 
-### 4. KYC System
-Kontrak memilki modifier `onlyVerified`, tapi sistem verifikasi user (KYC) belum ada UI-nya.
+**To Do**:
+- Integrate IPFS Pinning service (Pinata or Web3.Storage)
+- Upload actual files to IPFS on "Publish"
+- Store real CID (Content ID) in NFT Metadata
 
-*   **To Do**:
-    *   Halaman "Identity Verification" di frontend.
-    *   Admin Dashboard untuk menyetujui/menolak verifikasi user.
+### 4. KYC System UI
+
+Contract has `onlyVerified` modifier, but no user verification UI exists.
+
+**To Do**:
+- Create "Identity Verification" page in frontend
+- Admin Dashboard for approving/rejecting user verification
 
 ### 5. Backend Indexer (The Graph)
-Saat ini frontend mengambil data dengan cara *looping* satu per satu ke blockchain. Ini tidak *scalable* jika ada 1000+ lagu.
 
-*   **To Do**:
-    *   Membuat Subgraph di **The Graph Protocol**.
-    *   Meng-index event `MusicIPMinted` dan `Transfer`.
-    *   Frontend query data via GraphQL untuk performa yang jauh lebih cepat.
+Currently, frontend fetches data by looping through blockchain one by one. Not scalable for 1000+ songs.
+
+**To Do**:
+- Create Subgraph on **The Graph Protocol**
+- Index `MusicIPMinted` and `Transfer` events
+- Frontend queries via GraphQL for much faster performance
 
 ---
 
-## 📅 Rencana Deployment
+## 📅 Deployment Plan
 
-1.  **Fase 1 (Selesai)**: Localhost Development.
-2.  **Fase 2 (In Progress)**: Deploy Contracts ke **Sepolia Testnet**.
-    *   [x] Konfigurasi Hardhat & Environment Variables.
-    *   [x] Deploy ke Sepolia menggunakan Hardhat Ignition.
-    *   [x] Verifikasi Kontrak di Etherscan.
-3.  **Fase 3**: Audit Smart Contract (Keamanan).
-4.  **Fase 4**: Mainnet Launch (Ethereum / L2 seperti Arbitrum).
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | Local Development | ✅ Complete |
+| 2 | Mantle Testnet Deployment | 🔄 In Progress |
+| 3 | Smart Contract Audit | ⏳ Planned |
+| 4 | Mantle Mainnet Launch | ⏳ Planned |
+
+---
+
+## 🎯 Vision
+
+Melodia aims to revolutionize the music industry by:
+
+1. **Democratizing Music Investment**: Allow fans to invest in their favorite artists
+2. **Transparent Royalty Distribution**: On-chain, verifiable payments
+3. **Artist Empowerment**: Direct access to capital without middlemen
+4. **Community Building**: Create stakeholder communities around artists

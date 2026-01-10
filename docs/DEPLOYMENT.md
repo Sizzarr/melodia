@@ -1,39 +1,44 @@
-# Panduan Deployment ke Sepolia Testnet
+# Deployment Guide - Mantle Network
 
-## Persiapan
+## Prerequisites
 
-Sebelum deploy, siapkan:
+Before deploying, prepare:
 
-1. **Alchemy API Key**: Daftar di [Alchemy](https://www.alchemy.com/), buat App untuk Ethereum Sepolia
-2. **Private Key**: Export dari MetaMask (gunakan wallet khusus testing)
-3. **Sepolia ETH**: Dapatkan dari faucet:
-   - https://cloud.google.com/application/web3/faucet/ethereum/sepolia
-   - https://www.alchemy.com/faucets/ethereum-sepolia
-   - https://faucet.quicknode.com/ethereum/sepolia
+1. **Mantle Testnet MNT**: Get testnet tokens from [Mantle Faucet](https://faucet.testnet.mantle.xyz)
+2. **Private Key**: Export from MetaMask (use a dedicated testing wallet)
+3. **Node.js 18+**: Required for Hardhat
 
-## Langkah 1: Konfigurasi Environment
+## Step 1: Configure Environment
 
-Buat file `.env` di root project:
+Create a `.env` file in the project root:
 
 ```env
 PRIVATE_KEY=0xYOUR_PRIVATE_KEY_HERE
-SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_ALCHEMY_API_KEY
+MANTLE_TESTNET_RPC_URL=https://rpc.testnet.mantle.xyz
+MANTLE_MAINNET_RPC_URL=https://rpc.mantle.xyz
+VITE_NETWORK=mantleTestnet
 ```
 
-> **PENTING**: Jangan commit file `.env` ke git. File ini sudah ada di `.gitignore`.
+> **IMPORTANT**: Never commit the `.env` file to git. It's already in `.gitignore`.
 
-## Langkah 2: Deploy Contracts
+## Step 2: Deploy Contracts
 
-Jalankan script deployment:
+### Deploy to Mantle Testnet
 
 ```bash
-npx hardhat run scripts/deploy-admin.js --network sepolia
+npx hardhat run scripts/deploy-admin.js --network mantleTestnet
 ```
 
-Output akan menampilkan alamat contract:
+### Deploy to Mantle Mainnet
+
+```bash
+npx hardhat run scripts/deploy-admin.js --network mantleMainnet
+```
+
+Output will display contract addresses:
 
 ```
-Deploying to Sepolia...
+Deploying to Mantle Testnet...
 Deploying with: 0xYourWalletAddress
 KYCRegistry: 0x...
 MusicIPNFT: 0x...
@@ -43,104 +48,102 @@ kycRegistry: 0x...
 musicIPNFT: 0x...
 ```
 
-## Langkah 3: Update Frontend Config
+## Step 3: Update Frontend Config
 
-Edit file `frontend/src/config/contracts.js`:
+Edit `frontend/src/config/contracts.js`:
 
 ```javascript
 export const CONTRACTS = {
   musicRoyalty: {
-    address: "0x...", // Tidak perlu diubah (di-deploy dinamis)
+    address: "0x...", // Dynamic, deployed per song
     abi: MusicRoyaltyABI,
   },
   musicIPNFT: {
-    address: "0xYOUR_NEW_MUSICIPNFT_ADDRESS", // Dari output deploy
+    address: "0xYOUR_NEW_MUSICIPNFT_ADDRESS",
     abi: MusicIPNFTABI,
   },
   kycRegistry: {
-    address: "0xYOUR_NEW_KYCREGISTRY_ADDRESS", // Dari output deploy
+    address: "0xYOUR_NEW_KYCREGISTRY_ADDRESS",
     abi: KYCRegistryABI,
   },
 };
 ```
 
-## Langkah 4: Jalankan Frontend
+## Step 4: Run Frontend
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Buka http://localhost:5173
+Open http://localhost:5173
 
-## Langkah 5: Build untuk Production
+## Step 5: Build for Production
 
 ```bash
 cd frontend
 npm run build
 ```
 
-Upload folder `dist` ke Vercel, Netlify, atau GitHub Pages.
+Upload the `dist` folder to Netlify, Vercel, or any static hosting.
 
 ---
 
-# Akses Admin Dashboard
+# Admin Dashboard Access
 
-## Siapa yang Bisa Akses?
+## Who Can Access?
 
-Wallet yang **deploy** contract `MusicIPNFT` otomatis menjadi **Admin/Owner**.
+The wallet that **deploys** the `MusicIPNFT` contract automatically becomes the **Admin/Owner**.
 
-## Cara Login Admin
+## Admin Login
 
-1. Buka `http://localhost:5173/admin`
-2. Connect wallet yang sama dengan yang deploy contract
-3. Sistem akan verifikasi on-chain apakah wallet = contract owner
-4. Jika match, redirect ke Admin Dashboard
+1. Open `http://localhost:5173/admin`
+2. Connect the same wallet used for deployment
+3. System verifies on-chain if wallet = contract owner
+4. If matched, redirect to Admin Dashboard
 
-## Fitur Admin Dashboard
+## Admin Features
 
-- Lihat pending listing requests
+- View pending listing requests
 - Approve/Reject song submissions
-- Mint NFT untuk approved songs
+- Mint NFTs for approved songs
 
 ## Troubleshooting
 
 **Error "Unauthorized":**
-- Wallet yang connect bukan owner contract
-- Pastikan pakai wallet yang sama saat deploy
+- Connected wallet is not the contract owner
+- Use the same wallet that deployed the contracts
 
 **Error "Contract not found":**
-- Cek network di MetaMask (harus Sepolia)
-- Cek alamat contract di `contracts.js`
+- Check network in MetaMask (must be Mantle Testnet/Mainnet)
+- Verify contract addresses in `contracts.js`
 
 ---
 
-# Contract Addresses (Sepolia)
+# Network Information
 
-| Contract | Address |
-|----------|---------|
-| KYCRegistry | `0x381D28F516f3951203A29E3B636e00B6e79AC220` |
-| MusicIPNFT | `0x57cFb035C6DFCB71f01AE6EA24196328E8b352f6` |
-
-Admin Wallet: `0x14d125438573DA6aE15686e262D1682666e876C8`
+| Network | Chain ID | Currency | Block Explorer |
+|---------|----------|----------|----------------|
+| Mantle Testnet | 5001 | MNT | https://explorer.testnet.mantle.xyz |
+| Mantle Mainnet | 5000 | MNT | https://explorer.mantle.xyz |
 
 ---
 
-# Workflow Aplikasi
+# Application Workflow
 
 ## 1. Creator Flow
-1. Buka Creator Hub
-2. Isi form (nama token, judul lagu, royalty value, shares)
-3. Deploy contract (Step 1) - Bikin MusicRoyalty contract
-4. Request listing (Step 2) - Submit ke Admin untuk approval
+1. Open Creator Hub
+2. Fill form (token name, song title, royalty value, shares)
+3. Deploy contract (Step 1) - Creates MusicRoyalty contract
+4. Request listing (Step 2) - Submit to Admin for approval
 
 ## 2. Admin Flow
-1. Login ke Admin Dashboard
+1. Login to Admin Dashboard
 2. Review pending requests
-3. Approve listing -> NFT di-mint, song muncul di Marketplace
+3. Approve listing → NFT is minted, song appears in Marketplace
 
 ## 3. Investor Flow
-1. Buka Marketplace
-2. Klik song yang menarik
-3. Buy shares (butuh ETH sesuai harga per share)
-4. Lihat portfolio di halaman Portfolio
+1. Open Marketplace
+2. Click on an interesting song
+3. Buy shares (requires MNT based on share price)
+4. View portfolio on the Portfolio page

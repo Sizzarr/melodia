@@ -1,7 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import { getSigner } from "./web3/provider";
+import { 
+  getActiveNetwork, 
+  isCorrectNetwork, 
+  getSwitchNetworkParams, 
+  getAddNetworkParams 
+} from "./config/networks";
 
 import HomePage from "./pages/HomePage";
 import Marketplace from "./pages/Marketplace";
@@ -85,8 +91,8 @@ export default function App() {
   async function checkNetwork() {
       if (!window.ethereum) return;
       const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-      // 0xaa36a7 is Chain ID 11155111 (Sepolia)
-      if (chainId !== "0xaa36a7") {
+      // Check if connected to the correct network (Mantle Testnet/Mainnet)
+      if (!isCorrectNetwork(chainId)) {
           setIsWrongNetwork(true);
       } else {
           setIsWrongNetwork(false);
@@ -97,7 +103,7 @@ export default function App() {
       try {
           await window.ethereum.request({
               method: "wallet_switchEthereumChain",
-              params: [{ chainId: "0xaa36a7" }],
+              params: [getSwitchNetworkParams()],
           });
           window.location.reload();
       } catch (switchError) {
@@ -106,22 +112,10 @@ export default function App() {
               try {
                   await window.ethereum.request({
                       method: "wallet_addEthereumChain",
-                      params: [
-                          {
-                              chainId: "0xaa36a7",
-                              chainName: "Sepolia Testnet",
-                              rpcUrls: ["https://sepolia.infura.io/v3/"], // or public rpc
-                              nativeCurrency: {
-                                  name: "SepoliaETH",
-                                  symbol: "ETH",
-                                  decimals: 18,
-                              },
-                              blockExplorerUrls: ["https://sepolia.etherscan.io"],
-                          },
-                      ],
+                      params: [getAddNetworkParams()],
                   });
               } catch (addError) {
-                  toast.error("Failed to add Sepolia network");
+                  toast.error(`Failed to add ${getActiveNetwork().name}`);
               }
           } else {
               toast.error("Could not switch network automatically.");

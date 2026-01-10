@@ -1,12 +1,12 @@
-# Arsitektur Smart Contract
+# Smart Contract Architecture
 
-Melodia terdiri dari **3 Smart Contract** yang saling berinteraksi.
+Melodia consists of **3 Smart Contracts** that interact with each other.
 
 ## Contracts Overview
 
 ### 1. KYCRegistry.sol
 
-**Fungsi**: Whitelist user yang terverifikasi
+**Purpose**: Whitelist verified users
 
 ```solidity
 // Verify user
@@ -16,18 +16,16 @@ function verify(address user) external onlyOwner;
 function isVerified(address user) external view returns (bool);
 ```
 
-**Address (Sepolia)**: `0x381D28F516f3951203A29E3B636e00B6e79AC220`
-
 ---
 
 ### 2. MusicRoyalty.sol
 
-**Jenis**: Custom Token (ERC-20 style)
+**Type**: Custom Token (ERC-20 style)
 
-**Fungsi**: 
-- Setiap lagu memiliki 1 kontrak MusicRoyalty unik
-- Token mewakili "Saham" kepemilikan royalti
-- Investor bisa buy/sell shares
+**Purpose**: 
+- Each song has 1 unique MusicRoyalty contract
+- Tokens represent "Shares" of royalty ownership
+- Investors can buy/sell shares
 
 **Constructor Parameters**:
 ```solidity
@@ -59,14 +57,12 @@ function transfer(address to, uint256 amount) external;
 
 ### 3. MusicIPNFT.sol
 
-**Jenis**: ERC-721 NFT
+**Type**: ERC-721 NFT
 
-**Fungsi**:
-- Sertifikat Hak Cipta Master
-- Menyimpan metadata: judul, artis, IPFS link
-- Menyimpan link ke kontrak MusicRoyalty
-
-**Address (Sepolia)**: `0x57cFb035C6DFCB71f01AE6EA24196328E8b352f6`
+**Purpose**:
+- Master Copyright Certificate
+- Stores metadata: title, artist, IPFS link
+- Links to MusicRoyalty contract
 
 **Key Functions**:
 ```solidity
@@ -106,7 +102,7 @@ function getPendingRequests() external view returns (Request[] memory);
 └─────────────┘     └──────────────┘
 ```
 
-## Alur Publish Song
+## Song Publishing Flow
 
 1. **Creator Request**:
    - Deploy MusicRoyalty contract via Creator Hub
@@ -114,21 +110,22 @@ function getPendingRequests() external view returns (Request[] memory);
    - Status: Pending
 
 2. **Admin Approval**:
-   - Admin buka Admin Dashboard
+   - Admin opens Admin Dashboard
    - Call `approveListing(requestId)`
-   - NFT di-mint ke wallet Creator
+   - NFT is minted to Creator's wallet
 
 3. **Investor Buy**:
-   - Buka song detail
-   - Call `buyShares()` + kirim ETH
-   - Shares transfer ke investor
+   - Open song detail
+   - Call `buyShares()` + send MNT
+   - Shares transfer to investor
 
-## Solidity Version
+## Technical Specifications
 
-```
-pragma solidity 0.8.20;
-```
+**Solidity Version**: `0.8.20`
 
-## Dependencies
-
+**Dependencies**:
 - OpenZeppelin Contracts (ERC721, Ownable)
+
+**Network**: Mantle (L2)
+- Testnet Chain ID: 5001
+- Mainnet Chain ID: 5000
