@@ -63,15 +63,28 @@ export default function App() {
 
   const connectWallet = async () => {
     try {
+      if (!window.ethereum) {
+        toast.error("MetaMask tidak ditemukan! Silakan install MetaMask extension.");
+        return;
+      }
+      
       const signer = await getSigner();
       const address = await signer.getAddress();
 
       setSigner(signer);
       setAccount(address);
 
+      toast.success("Wallet terhubung!");
       console.log("Connected:", address);
     } catch (err) {
       console.error(err.message);
+      if (err.message.includes("user rejected")) {
+        toast.error("Koneksi ditolak oleh user.");
+      } else if (err.message.includes("Network salah")) {
+        toast.error("Silakan switch ke Mantle Sepolia network.");
+      } else {
+        toast.error("Gagal connect wallet: " + err.message);
+      }
     }
   };
 
